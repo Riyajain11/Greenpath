@@ -21,23 +21,22 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 app.use("/api/users", userRoutes);
 app.use("/api/crops", cropRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/fertilizers", fertilizerRoutes);
 app.use("/api/orders", orderRoutes);
 
-app.get("/", (req, res) => {
-  res.send("🌱 GreenPath API is running...");
-});
-
 app.use(express.static(path.join(__dirname, "../frontend/Greenpath/dist")));
 
-app.get("*", (req, res) => {
-  if (req.originalUrl.startsWith("/api")) return res.status(404).end();
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api") || req.path.startsWith("/uploads")) {
+    return next();
+  }
+
   res.sendFile(path.join(__dirname, "../frontend/Greenpath/dist/index.html"));
 });
-
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
