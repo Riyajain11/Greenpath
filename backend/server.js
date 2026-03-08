@@ -34,6 +34,7 @@ app.get("/", (req, res) => {
 app.use(express.static(path.join(__dirname, "../frontend/Greenpath/dist")));
 
 app.get("*", (req, res) => {
+  if (req.originalUrl.startsWith("/api")) return res.status(404).end();
   res.sendFile(path.join(__dirname, "../frontend/Greenpath/dist/index.html"));
 });
 
