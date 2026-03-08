@@ -4,8 +4,8 @@ import "../styles/CropForm.css";
 import { useNavigate } from "react-router-dom";
 
 const CropForm = () => {
-   const navigate = useNavigate();
-   const [formData, setFormData] = useState({
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
     user: JSON.parse(localStorage.getItem("user"))?._id || "",
     firstName: "",
     lastName: "",
@@ -43,18 +43,14 @@ const CropForm = () => {
         data.append("images", file);
       });
 
-      const res = await axios.post(
-        "http://localhost:5000/api/crops",
-        data,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
+      const res = await axios.post("/api/crops", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       console.log("Upload success:", res.data);
       alert("Crop submitted successfully!");
       navigate("/crops-info");
-    }
-
-    catch (err) {
+    } catch (err) {
       console.error("Error submitting crop:", err);
       if (err.response) {
         console.error("Server responded with:", err.response.data);
@@ -82,17 +78,35 @@ const CropForm = () => {
         >
           <div className="form-group">
             <label>First Name</label>
-            <input name="firstName" type="text" placeholder="First Name" onChange={handleChange} required />
+            <input
+              name="firstName"
+              type="text"
+              placeholder="First Name"
+              onChange={handleChange}
+              required
+            />
           </div>
 
           <div className="form-group">
             <label>Last Name</label>
-            <input name="lastName" type="text" placeholder="Last Name" onChange={handleChange} required />
+            <input
+              name="lastName"
+              type="text"
+              placeholder="Last Name"
+              onChange={handleChange}
+              required
+            />
           </div>
 
           <div className="form-group">
             <label>Contact Number</label>
-            <input name="contact" type="text" placeholder="e.g., 9876543210" onChange={handleChange} required />
+            <input
+              name="contact"
+              type="text"
+              placeholder="e.g., 9876543210"
+              onChange={handleChange}
+              required
+            />
           </div>
 
           <div className="form-group">
@@ -102,27 +116,57 @@ const CropForm = () => {
 
           <div className="form-group full-width">
             <label>Crop Type</label>
-            <input name="cropType" type="text" placeholder="e.g., Wheat, Rice" onChange={handleChange} required />
+            <input
+              name="cropType"
+              type="text"
+              placeholder="e.g., Wheat, Rice"
+              onChange={handleChange}
+              required
+            />
           </div>
 
           <div className="form-group">
             <label>Quantity (in KG)</label>
-            <input name="quantityKg" type="number" placeholder="e.g., 500" onChange={handleChange} required />
+            <input
+              name="quantityKg"
+              type="number"
+              placeholder="e.g., 500"
+              onChange={handleChange}
+              required
+            />
           </div>
 
           <div className="form-group">
             <label>Expected Price per KG (₹)</label>
-            <input name="expectedPricePerKg" type="number" placeholder="e.g., 20" onChange={handleChange} required />
+            <input
+              name="expectedPricePerKg"
+              type="number"
+              placeholder="e.g., 20"
+              onChange={handleChange}
+              required
+            />
           </div>
 
           <div className="form-group">
             <label>State</label>
-            <input name="state" type="text" placeholder="e.g., Maharashtra" onChange={handleChange} required />
+            <input
+              name="state"
+              type="text"
+              placeholder="e.g., Maharashtra"
+              onChange={handleChange}
+              required
+            />
           </div>
 
           <div className="form-group">
             <label>City</label>
-            <input name="city" type="text" placeholder="e.g., Nagpur" onChange={handleChange} required />
+            <input
+              name="city"
+              type="text"
+              placeholder="e.g., Nagpur"
+              onChange={handleChange}
+              required
+            />
           </div>
 
           <div className="form-group full-width">
@@ -147,7 +191,12 @@ const CropForm = () => {
                     key={i}
                     src={URL.createObjectURL(img)}
                     alt="preview"
-                    style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "8px" }}
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      objectFit: "cover",
+                      borderRadius: "8px",
+                    }}
                   />
                 ))}
               </div>

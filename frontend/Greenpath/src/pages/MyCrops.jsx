@@ -16,9 +16,7 @@ const MyCrops = () => {
 
   const fetchCrops = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:5000/api/crops/mycrops/${user._id}`
-      );
+      const res = await axios.get(`/api/crops/mycrops/${user._id}`);
       setCrops(res.data);
 
       const init = {};
@@ -52,11 +50,9 @@ const MyCrops = () => {
   const handleRefreshAI = async (cropId) => {
     try {
       setRefreshingId(cropId);
-      const res = await axios.get(
-        `http://localhost:5000/api/crops/${cropId}/ai-refresh`
-      );
+      const res = await axios.get(`/api/crops/${cropId}/ai-refresh`);
       setCrops((prev) =>
-        prev.map((c) => (c._id === cropId ? res.data.crop : c))
+        prev.map((c) => (c._id === cropId ? res.data.crop : c)),
       );
     } catch {
       alert("Failed to refresh AI");
@@ -83,14 +79,14 @@ const MyCrops = () => {
               {crop.images?.length > 0 && (
                 <div className="relative w-full h-48 mb-3">
                   <img
-                   src={
-                   crop.images[currentIndexes[crop._id]]?.startsWith("http")
-      ? crop.images[currentIndexes[crop._id]]
-      : `http://localhost:5000${crop.images[currentIndexes[crop._id]]}`
-  }
-  alt={crop.cropType}
-  className="w-full h-48 object-cover rounded"
-/>
+                    src={
+                      crop.images[currentIndexes[crop._id]]?.startsWith("http")
+                        ? crop.images[currentIndexes[crop._id]]
+                        : `${crop.images[currentIndexes[crop._id]]}`
+                    }
+                    alt={crop.cropType}
+                    className="w-full h-48 object-cover rounded"
+                  />
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -114,9 +110,15 @@ const MyCrops = () => {
               )}
 
               <h3 className="text-xl font-semibold">{crop.cropType}</h3>
-              <p><strong>Quantity:</strong> {crop.quantityKg} kg</p>
-              <p><strong>Price:</strong> ₹{crop.expectedPricePerKg}/kg</p>
-              <p><strong>Location:</strong> {crop.city}, {crop.state}</p>
+              <p>
+                <strong>Quantity:</strong> {crop.quantityKg} kg
+              </p>
+              <p>
+                <strong>Price:</strong> ₹{crop.expectedPricePerKg}/kg
+              </p>
+              <p>
+                <strong>Location:</strong> {crop.city}, {crop.state}
+              </p>
             </div>
 
             {/* 🌱 AI SMART PRICE */}
@@ -150,8 +152,7 @@ const MyCrops = () => {
                     {refreshingId === crop._id ? "..." : "🔄"}
                   </button>
                 </div>
-                </div>
-             
+              </div>
             )}
           </div>
         ))}
@@ -171,12 +172,16 @@ const MyCrops = () => {
               🤖 Smart Price Analysis
             </h3>
 
-            <p><strong>Crop:</strong> {aiModalCrop.cropType}</p>
+            <p>
+              <strong>Crop:</strong> {aiModalCrop.cropType}
+            </p>
             <p className="mt-2">
-              <strong>Predicted:</strong> ₹{aiModalCrop.aiSnapshot.predictedMarketPrice} / quintal
+              <strong>Predicted:</strong> ₹
+              {aiModalCrop.aiSnapshot.predictedMarketPrice} / quintal
             </p>
             <p>
-              <strong>Your Price:</strong> ₹{aiModalCrop.expectedPricePerKg * 100} / quintal
+              <strong>Your Price:</strong> ₹
+              {aiModalCrop.expectedPricePerKg * 100} / quintal
             </p>
             <p>
               <strong>Trend:</strong> {aiModalCrop.aiSnapshot.changePercent}%
@@ -203,4 +208,3 @@ const MyCrops = () => {
 };
 
 export default MyCrops;
-

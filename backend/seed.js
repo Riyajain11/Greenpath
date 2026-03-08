@@ -20,9 +20,15 @@ function randomFrom(array) {
 =================================*/
 
 const grainCrops = [
-  "Rice", "Wheat", "Maize", "Barley",
-  "Bajra", "Jowar", 
-  "Mustard", "Soybean", "Groundnut"
+  "Rice",
+  "Wheat",
+  "Maize",
+  "Barley",
+  "Bajra",
+  "Jowar",
+  "Mustard",
+  "Soybean",
+  "Groundnut",
 ];
 
 const vegFruit = ["Tomato", "Onion", "Mango"];
@@ -40,13 +46,13 @@ function getRandomCrop() {
 
 const statesWithCities = {
   "Madhya Pradesh": ["Bhopal", "Indore"],
-  "Punjab": ["Ludhiana", "Chandigarh"],
-  "Maharashtra": ["Pune", "Nagpur"],
-  "Rajasthan": ["Jaipur", "Kota"],
+  Punjab: ["Ludhiana", "Chandigarh"],
+  Maharashtra: ["Pune", "Nagpur"],
+  Rajasthan: ["Jaipur", "Kota"],
   "Uttar Pradesh": ["Lucknow", "Kanpur"],
-  "Haryana": ["Gurgaon", "Hisar"],
-  "Gujarat": ["Ahmedabad", "Surat"],
-  "Bihar": ["Patna", "Gaya"]
+  Haryana: ["Gurgaon", "Hisar"],
+  Gujarat: ["Ahmedabad", "Surat"],
+  Bihar: ["Patna", "Gaya"],
 };
 
 /* ===============================
@@ -54,54 +60,24 @@ const statesWithCities = {
 =================================*/
 
 const cropImages = {
-  Bajra: [
-    "/uploads/ai-crops/Bajra.jpg",
-    "/uploads/ai-crops/Bajra2.jpeg"
-  ],
-  Barley: [
-    "/uploads/ai-crops/Barley.jpg",
-    "/uploads/ai-crops/Barley2.jpg"
-  ],
+  Bajra: ["/uploads/ai-crops/Bajra.jpg", "/uploads/ai-crops/Bajra2.jpeg"],
+  Barley: ["/uploads/ai-crops/Barley.jpg", "/uploads/ai-crops/Barley2.jpg"],
   Groundnut: [
     "/uploads/ai-crops/Groundnut1.jpg",
-    "/uploads/ai-crops/Groundnut2.jpg"
+    "/uploads/ai-crops/Groundnut2.jpg",
   ],
-  Jowar: [
-    "/uploads/ai-crops/Jowar1.jpg",
-    "/uploads/ai-crops/Jowar2.jpg"
-  ],
-  Maize: [
-    "/uploads/ai-crops/Maize.png",
-    "/uploads/ai-crops/Maize2.png"
-  ],
-  Mango: [
-    "/uploads/ai-crops/Mango.jpg",
-    "/uploads/ai-crops/Mango2.jpg"
-  ],
-  Mustard: [
-    "/uploads/ai-crops/Mustard1.jpg",
-    "/uploads/ai-crops/Mustard2.jpg"
-  ],
-  Onion: [
-    "/uploads/ai-crops/Onion.jpg",
-    "/uploads/ai-crops/Onion2.jpg"
-  ],
+  Jowar: ["/uploads/ai-crops/Jowar1.jpg", "/uploads/ai-crops/Jowar2.jpg"],
+  Maize: ["/uploads/ai-crops/Maize.png", "/uploads/ai-crops/Maize2.png"],
+  Mango: ["/uploads/ai-crops/Mango.jpg", "/uploads/ai-crops/Mango2.jpg"],
+  Mustard: ["/uploads/ai-crops/Mustard1.jpg", "/uploads/ai-crops/Mustard2.jpg"],
+  Onion: ["/uploads/ai-crops/Onion.jpg", "/uploads/ai-crops/Onion2.jpg"],
   Soybean: [
     "/uploads/ai-crops/SoyaBean1.jpg",
-    "/uploads/ai-crops/SoyaBean2.jpg"
+    "/uploads/ai-crops/SoyaBean2.jpg",
   ],
-  Tomato: [
-    "/uploads/ai-crops/Tomato.jpg",
-    "/uploads/ai-crops/Tomato2.jpg"
-  ],
-  Rice: [
-    "/uploads/ai-crops/Rice1.jpg",
-    "/uploads/ai-crops/Rice2.jpg"
-  ],
-  Wheat: [
-    "/uploads/ai-crops/Wheat1.jpg",
-    "/uploads/ai-crops/Wheat2.jpg"
-  ]
+  Tomato: ["/uploads/ai-crops/Tomato.jpg", "/uploads/ai-crops/Tomato2.jpg"],
+  Rice: ["/uploads/ai-crops/Rice1.jpg", "/uploads/ai-crops/Rice2.jpg"],
+  Wheat: ["/uploads/ai-crops/Wheat1.jpg", "/uploads/ai-crops/Wheat2.jpg"],
 };
 
 /* ===============================
@@ -128,7 +104,7 @@ async function seedDatabase() {
         email: `farmer${i}@gmail.com`,
         password: "123456",
         phone: `98765432${10 + i}`,
-        aadhar: `1234123412${10 + i}`
+        aadhar: `1234123412${10 + i}`,
       });
 
       users.push(user);
@@ -150,22 +126,22 @@ async function seedDatabase() {
       /* ===============================
          RANDOM 2–3 IMAGES
       =================================*/
-let images = [];
+      let images = [];
 
-if (cropImages[cropType]) {
-  const availableImages = [...cropImages[cropType]]; // copy array
+      if (cropImages[cropType]) {
+        const availableImages = [...cropImages[cropType]]; // copy array
 
-  // shuffle images
-  availableImages.sort(() => 0.5 - Math.random());
+        // shuffle images
+        availableImages.sort(() => 0.5 - Math.random());
 
-  // pick 2 or 3 but not more than available
-  const imageCount = Math.min(
-    Math.random() < 0.5 ? 2 : 3,
-    availableImages.length
-  );
+        // pick 2 or 3 but not more than available
+        const imageCount = Math.min(
+          Math.random() < 0.5 ? 2 : 3,
+          availableImages.length,
+        );
 
-  images = availableImages.slice(0, imageCount);
-}
+        images = availableImages.slice(0, imageCount);
+      }
 
       /* ===============================
          CALL AI API
@@ -174,26 +150,22 @@ if (cropImages[cropType]) {
       let aiSnapshot = null;
 
       try {
-        const aiRes = await axios.get(
-          "http://localhost:5000/api/ai/smart-price",
-          {
-            params: {
-              cropType: cropType.toLowerCase(),
-              state: state.toLowerCase(),
-              expectedPricePerKg
-            }
-          }
-        );
+        const aiRes = await axios.get("/api/ai/smart-price", {
+          params: {
+            cropType: cropType.toLowerCase(),
+            state: state.toLowerCase(),
+            expectedPricePerKg,
+          },
+        });
 
         if (aiRes.data?.success) {
           aiSnapshot = {
             predictedMarketPrice: aiRes.data.predictedMarketPrice,
             priceGapPercent: aiRes.data.priceGapPercent,
             suggestion: aiRes.data.suggestion,
-            changePercent: aiRes.data.changePercent
+            changePercent: aiRes.data.changePercent,
           };
         }
-
       } catch (err) {
         console.log("AI ERROR:", err.message);
       }
@@ -214,13 +186,12 @@ if (cropImages[cropType]) {
 
         images,
         aiSnapshot,
-        aiLastUpdated: new Date()
+        aiLastUpdated: new Date(),
       });
     }
 
     console.log("Database seeded successfully 🚀");
     process.exit();
-
   } catch (error) {
     console.error(error);
     process.exit(1);

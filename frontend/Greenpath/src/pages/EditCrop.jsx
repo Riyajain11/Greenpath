@@ -28,7 +28,7 @@ const EditCrop = () => {
     const fetchCrop = async () => {
       try {
         setIsLoading(true);
-        const res = await axios.get(`http://localhost:5000/api/crops/${id}`);
+        const res = await axios.get(`/api/crops/${id}`);
         setFormData({
           firstName: res.data.firstName,
           lastName: res.data.lastName,
@@ -93,16 +93,12 @@ const EditCrop = () => {
       const user = JSON.parse(localStorage.getItem("user"));
       const token = user?.token;
 
-      const res = await axios.put(
-        `http://localhost:5000/api/crops/${id}`,
-        data,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await axios.put(`/api/crops/${id}`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       console.log("Update success:", res.data);
       alert("Crop updated successfully!");
@@ -118,7 +114,6 @@ const EditCrop = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-green-100 py-6 px-3 sm:px-6">
       <div className="max-w-5xl mx-auto">
-
         {/* Hero Section */}
         <div className="relative rounded-2xl overflow-hidden shadow-lg mb-6 h-44 sm:h-64">
           <div
@@ -141,17 +136,18 @@ const EditCrop = () => {
 
         {/* Form Card */}
         <div className="relative bg-white rounded-2xl shadow-lg overflow-hidden mb-10">
-
           {isLoading && (
             <div className="absolute inset-0 bg-white/70 backdrop-blur-sm flex items-center justify-center z-10">
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-green-500"></div>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} encType="multipart/form-data" className="p-4 sm:p-8">
-
+          <form
+            onSubmit={handleSubmit}
+            encType="multipart/form-data"
+            className="p-4 sm:p-8"
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
               {/* Personal Info */}
               <div className="md:col-span-2">
                 <h2 className="text-lg sm:text-xl font-semibold text-gray-800 border-b pb-2">
@@ -162,7 +158,9 @@ const EditCrop = () => {
               {["firstName", "lastName", "contact"].map((field) => (
                 <div key={field}>
                   <label className="text-sm text-gray-600 capitalize">
-                    {field === "contact" ? "Contact Number" : field.replace(/([A-Z])/g, " $1")}
+                    {field === "contact"
+                      ? "Contact Number"
+                      : field.replace(/([A-Z])/g, " $1")}
                   </label>
                   <input
                     name={field}
@@ -334,7 +332,6 @@ const EditCrop = () => {
                 {isLoading ? "Updating..." : "Update Crop Details"}
               </button>
             </div>
-
           </form>
         </div>
       </div>

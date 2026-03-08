@@ -2,16 +2,16 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
-import { 
-  faArrowLeft, 
-  faArrowRight, 
-  faUser, 
+import {
+  faArrowLeft,
+  faArrowRight,
+  faUser,
   faPhone,
   faSeedling,
   faSearch,
   faFilter,
   faEye,
-  faMapMarkerAlt
+  faMapMarkerAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function CropsInfo() {
@@ -22,8 +22,8 @@ export default function CropsInfo() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterState, setFilterState] = useState("");
   const [sortBy, setSortBy] = useState("newest");
-  const API_BASE = "http://localhost:5000/api/crops";
-  
+  const API_BASE = "/api/crops";
+
   useEffect(() => {
     const fetchCrops = async () => {
       try {
@@ -58,11 +58,13 @@ export default function CropsInfo() {
   };
 
   // Filter crops based on search term and state
-  const filteredCrops = crops.filter(crop => {
-    const matchesSearch = crop.cropType?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         crop.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         crop.state?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesState = !filterState || crop.state?.toLowerCase() === filterState.toLowerCase();
+  const filteredCrops = crops.filter((crop) => {
+    const matchesSearch =
+      crop.cropType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      crop.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      crop.state?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesState =
+      !filterState || crop.state?.toLowerCase() === filterState.toLowerCase();
     return matchesSearch && matchesState;
   });
 
@@ -79,7 +81,7 @@ export default function CropsInfo() {
   });
 
   // Get unique states for filter dropdown
-  const states = [...new Set(crops.map(crop => crop.state).filter(Boolean))];
+  const states = [...new Set(crops.map((crop) => crop.state).filter(Boolean))];
 
   if (loading) {
     return (
@@ -93,15 +95,14 @@ export default function CropsInfo() {
   }
 
   return (
-   <div className="min-h-screen bg-[#f7faf7] pt-28 pb-10 px-4 sm:px-6 lg:px-8">
-
+    <div className="min-h-screen bg-[#f7faf7] pt-28 pb-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Page Header */}
-<div className="mb-10 text-center">
-  <h1 className="text-3xl md:text-3xl font-semibold text-[#2d5a4f]">
-    🌾 Explore Available Crops
-  </h1>
-</div>
+        <div className="mb-10 text-center">
+          <h1 className="text-3xl md:text-3xl font-semibold text-[#2d5a4f]">
+            🌾 Explore Available Crops
+          </h1>
+        </div>
 
         {/* Search and Filter Section */}
         <div className="bg-white rounded-xl p-4 mb-8 shadow-sm border border-[#e0ebe0]">
@@ -118,7 +119,7 @@ export default function CropsInfo() {
                 className="w-full pl-10 pr-4 py-2 border border-[#c8d9c7] rounded-lg focus:ring-2 focus:ring-[#5b8c5a] focus:border-[#5b8c5a] text-[#2d5a4f]"
               />
             </div>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
               <div className="relative w-full sm:w-48">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -130,12 +131,14 @@ export default function CropsInfo() {
                   className="w-full pl-10 pr-4 py-2 border border-[#c8d9c7] rounded-lg focus:ring-2 focus:ring-[#5b8c5a] focus:border-[#5b8c5a] text-[#2d5a4f] appearance-none"
                 >
                   <option value="">All States</option>
-                  {states.map(state => (
-                    <option key={state} value={state}>{state}</option>
+                  {states.map((state) => (
+                    <option key={state} value={state}>
+                      {state}
+                    </option>
                   ))}
                 </select>
               </div>
-              
+
               <div className="relative w-full sm:w-48">
                 <select
                   value={sortBy}
@@ -154,12 +157,17 @@ export default function CropsInfo() {
         {sortedCrops.length === 0 ? (
           <div className="bg-white rounded-xl p-12 text-center shadow-sm border border-[#e0ebe0]">
             <div className="w-20 h-20 bg-[#e9f3e8] rounded-full flex items-center justify-center mx-auto mb-4">
-              <FontAwesomeIcon icon={faSeedling} className="text-[#5b8c5a] text-2xl" />
+              <FontAwesomeIcon
+                icon={faSeedling}
+                className="text-[#5b8c5a] text-2xl"
+              />
             </div>
-            <h3 className="text-xl font-medium text-[#2d5a4f] mb-2">No crops found</h3>
+            <h3 className="text-xl font-medium text-[#2d5a4f] mb-2">
+              No crops found
+            </h3>
             <p className="text-[#5b8c5a] max-w-md mx-auto">
-              {searchTerm || filterState 
-                ? "Try adjusting your search or filter criteria" 
+              {searchTerm || filterState
+                ? "Try adjusting your search or filter criteria"
                 : "No crops are currently available. Check back later for fresh produce!"}
             </p>
           </div>
@@ -172,20 +180,20 @@ export default function CropsInfo() {
               const farmer =
                 crop.firstName || crop.lastName
                   ? `${crop.firstName ?? ""} ${crop.lastName ?? ""}`
-                  : crop.farmerName ?? crop.user?.name ?? "Farmer";
+                  : (crop.farmerName ?? crop.user?.name ?? "Farmer");
               const contact = crop.contact ?? "";
 
-            const imageUrls = (crop.images || [])
-  .map((img) => {
-    if (!img) return null;
+              const imageUrls = (crop.images || [])
+                .map((img) => {
+                  if (!img) return null;
 
-    // If already full URL
-    if (img.startsWith("http")) return img;
+                  // If already full URL
+                  if (img.startsWith("http")) return img;
 
-    // For local uploads
-    return `http://localhost:5000${img}`;
-  })
-  .filter(Boolean);
+                  // For local uploads
+                  return `${img}`;
+                })
+                .filter(Boolean);
 
               const currentIndex = currentImageIndex[crop._id] || 0;
 
@@ -193,7 +201,6 @@ export default function CropsInfo() {
                 <div
                   key={crop._id}
                   className="bg-white rounded-xl overflow-hidden shadow-sm border border-[#e0ebe0] hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
-
                 >
                   {/* Image section */}
                   <div className="relative h-56 bg-[#f0f7ef] overflow-hidden">
@@ -205,7 +212,10 @@ export default function CropsInfo() {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <FontAwesomeIcon icon={faSeedling} className="text-[#c8d9c7] text-4xl" />
+                        <FontAwesomeIcon
+                          icon={faSeedling}
+                          className="text-[#c8d9c7] text-4xl"
+                        />
                       </div>
                     )}
 
@@ -233,7 +243,7 @@ export default function CropsInfo() {
                         {imageUrls.map((_, idx) => (
                           <div
                             key={idx}
-                            className={`w-2 h-2 rounded-full ${idx === currentIndex ? 'bg-white' : 'bg-white/50'}`}
+                            className={`w-2 h-2 rounded-full ${idx === currentIndex ? "bg-white" : "bg-white/50"}`}
                           />
                         ))}
                       </div>
@@ -247,7 +257,8 @@ export default function CropsInfo() {
                     )}
 
                     {/* New badge */}
-                    {new Date(crop.createdAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) && (
+                    {new Date(crop.createdAt) >
+                      new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) && (
                       <div className="absolute top-3 right-3 bg-[#e9f3e8] text-[#5b8c5a] text-xs font-medium px-2 py-1 rounded">
                         New
                       </div>
@@ -255,9 +266,11 @@ export default function CropsInfo() {
                   </div>
 
                   {/* Crop details */}
-                  <div className="p-4" >
+                  <div className="p-4">
                     <div className="flex justify-between items-start mb-3">
-                      <h3 className="text-lg font-semibold text-[#2d5a4f]">{title}</h3>
+                      <h3 className="text-lg font-semibold text-[#2d5a4f]">
+                        {title}
+                      </h3>
                       {crop.quantityKg && (
                         <span className="bg-[#e9f3e8] text-[#5b8c5a] text-xs font-medium px-2 py-1 rounded-full">
                           {crop.quantityKg} kg
@@ -270,14 +283,19 @@ export default function CropsInfo() {
                         <FontAwesomeIcon icon={faUser} className="mr-2" />
                         <span>{farmer}</span>
                       </div>
-                      
+
                       <div className="flex items-center text-[#5b8c5a] text-sm">
-                        <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2" />
+                        <FontAwesomeIcon
+                          icon={faMapMarkerAlt}
+                          className="mr-2"
+                        />
                         <span>
-                          {city}{city && state ? ", " : ""}{state}
+                          {city}
+                          {city && state ? ", " : ""}
+                          {state}
                         </span>
                       </div>
-                      
+
                       {contact && (
                         <div className="flex items-center text-[#5b8c5a] text-sm">
                           <FontAwesomeIcon icon={faPhone} className="mr-2" />
@@ -292,13 +310,15 @@ export default function CropsInfo() {
                           Listed {new Date(crop.createdAt).toLocaleDateString()}
                         </span>
                       )}
-                    <button
-                   onClick={()=>navigate(`/crop/${crop._id}?public=true`)}
-                   className="text-[#5b8c5a] hover:text-[#2d5a4f] text-sm font-medium flex items-center"
-                  >
-                 <FontAwesomeIcon icon={faEye} className="mr-1"/>
-                  View Details
-                  </button>
+                      <button
+                        onClick={() =>
+                          navigate(`/crop/${crop._id}?public=true`)
+                        }
+                        className="text-[#5b8c5a] hover:text-[#2d5a4f] text-sm font-medium flex items-center"
+                      >
+                        <FontAwesomeIcon icon={faEye} className="mr-1" />
+                        View Details
+                      </button>
                     </div>
                   </div>
                 </div>

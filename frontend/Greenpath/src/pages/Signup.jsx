@@ -37,14 +37,14 @@ export default function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (form.password !== form.confirmPassword) {
       alert("Passwords do not match.");
       return;
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/api/users/register", {
+      const res = await axios.post("/api/users/register", {
         name: form.name,
         email: form.email,
         phone: form.phone,
@@ -54,10 +54,12 @@ export default function Signup() {
 
       alert("✅ Signup successful!");
       localStorage.setItem("user", JSON.stringify(res.data));
-      navigate("/");    
+      navigate("/");
     } catch (err) {
       console.error("❌ Signup error:", err);
-      alert("Signup failed: " + (err.response?.data?.message || "Check console"));
+      alert(
+        "Signup failed: " + (err.response?.data?.message || "Check console"),
+      );
     }
   };
 
@@ -144,7 +146,9 @@ export default function Signup() {
               className="space-y-4"
             >
               <div>
-                <label className="block text-gray-700 mb-1">Aadhar Number</label>
+                <label className="block text-gray-700 mb-1">
+                  Aadhar Number
+                </label>
                 <input
                   name="aadhar"
                   type="text"
@@ -170,7 +174,9 @@ export default function Signup() {
               </div>
 
               <div>
-                <label className="block text-gray-700 mb-1">Confirm Password</label>
+                <label className="block text-gray-700 mb-1">
+                  Confirm Password
+                </label>
                 <input
                   name="confirmPassword"
                   type="password"
@@ -203,7 +209,10 @@ export default function Signup() {
 
         <p className="mt-6 text-center text-sm text-gray-600">
           Already have an account?{" "}
-          <Link to="/login" className="text-green-700 hover:underline font-medium">
+          <Link
+            to="/login"
+            className="text-green-700 hover:underline font-medium"
+          >
             Log in
           </Link>
         </p>

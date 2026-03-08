@@ -8,9 +8,7 @@ const MyOrders = () => {
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:5000/api/orders/my-orders/${user._id}`
-      );
+      const res = await axios.get(`/api/orders/my-orders/${user._id}`);
       setOrders(res.data);
     } catch (err) {
       console.error(err);
@@ -22,12 +20,12 @@ const MyOrders = () => {
   }, []);
 
   const cancelOrder = async (id) => {
-    await axios.put(`http://localhost:5000/api/orders/cancel/${id}`);
+    await axios.put(`/api/orders/cancel/${id}`);
     fetchOrders();
   };
 
   const deleteOrder = async (id) => {
-    await axios.delete(`http://localhost:5000/api/orders/${id}`);
+    await axios.delete(`/api/orders/${id}`);
     fetchOrders();
   };
 
@@ -37,18 +35,23 @@ const MyOrders = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {orders.map((order) => (
-          <div
-            key={order._id}
-            className="bg-white p-6 rounded-xl shadow-md"
-          >
+          <div key={order._id} className="bg-white p-6 rounded-xl shadow-md">
             <h3 className="text-lg font-semibold mb-2">
               {order.fertilizer?.name}
             </h3>
 
-            <p><strong>Farmer:</strong> {user.name}</p>
-            <p><strong>Amount:</strong> ₹{order.amount}</p>
-            <p><strong>Status:</strong> {order.status}</p>
-            <p><strong>Transaction ID:</strong> {order.transactionId}</p>
+            <p>
+              <strong>Farmer:</strong> {user.name}
+            </p>
+            <p>
+              <strong>Amount:</strong> ₹{order.amount}
+            </p>
+            <p>
+              <strong>Status:</strong> {order.status}
+            </p>
+            <p>
+              <strong>Transaction ID:</strong> {order.transactionId}
+            </p>
             <p>
               <strong>Order Date:</strong>{" "}
               {new Date(order.createdAt).toLocaleDateString()}

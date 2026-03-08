@@ -16,13 +16,11 @@ export default function Login() {
     setErrorMsg("");
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/users/login",
+      const res = axios.post("/api/users/login",
         {
-          email: formData.emailOrPhone, 
-          password: formData.password,
-        }
-      );
+        email: formData.emailOrPhone,
+        password: formData.password,
+      });
 
       localStorage.setItem("user", JSON.stringify(res.data));
       alert(" Login successful!");
