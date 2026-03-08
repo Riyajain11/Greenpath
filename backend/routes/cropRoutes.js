@@ -3,9 +3,7 @@ const router = express.Router();
 const Crop = require("../models/Crops");
 const { upload } = require("../config/cloudinary");
 const authMiddleware = require("../middleware/authMiddleware");
-
-const { exec } = require("child_process");
-const path = require("path");
+const axios = require("axios");
 
 // CREATE A NEW CROP WITH IMAGES + AI SNAPSHOT
 
@@ -37,40 +35,24 @@ router.post("/", upload.array("images"), async (req, res) => {
       images: imageUrls,
     });
 
-    // AUTO AI PRICE PREDICTION
+    // 🌱 AI PRICE PREDICTION FROM ML SERVICE
     try {
-      const pythonPath = path.join(
-        __dirname,
-        "..",
-        "ai",
-        "venv",
-        "Scripts",
-        "python.exe"
-      );
 
-      const pythonScriptPath = path.join(
-        __dirname,
-        "..",
-        "ai",
-        "ai_predict.py"
-      );
-
-      const daysAhead = 7;
-
-      const command = `"${pythonPath}" "${pythonScriptPath}" "${crop.cropType}" "${crop.state}" ${daysAhead} ${crop.expectedPricePerKg}`;
-
-      const aiResult = await new Promise((resolve, reject) => {
-        exec(command, (error, stdout) => {
-          if (error) return reject(error);
-          try {
-            resolve(JSON.parse(stdout));
-          } catch (err) {
-            reject(err);
+      const aiRes = await axios.get(
+        "https://greenpath-1.onrender.com/predict",
+        {
+          params: {
+            cropType: crop.cropType,
+            state: crop.state,
+            expectedPricePerKg: crop.expectedPricePerKg
           }
-        });
-      });
+        }
+      );
+
+      const aiResult = aiRes.data;
 
       if (aiResult.success) {
+
         crop.aiSnapshot = {
           predictedMarketPrice: aiResult.predictedMarketPrice,
           priceGapPercent: aiResult.priceGapPercent,
@@ -78,20 +60,28 @@ router.post("/", upload.array("images"), async (req, res) => {
           changePercent: aiResult.changePercent,
         };
 
-        // STEP 2 ADDITION
         crop.aiLastUpdated = new Date();
       }
+
     } catch (aiError) {
-      console.error(" AI prediction failed:", aiError.message);
+
+      console.error("AI prediction failed:", aiError.message);
+
     }
 
     await crop.save();
+
     res.status(201).json(crop);
+
   } catch (err) {
+
     console.error("Error creating crop:", err);
+
     res.status(500).json({ message: "Server error creating crop" });
+
   }
 });
+
 
 // FETCH ALL CROPS
 
@@ -104,6 +94,7 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: "Server error fetching crops" });
   }
 });
+
 
 // FETCH CROPS BY USER ID
 
@@ -119,6 +110,7 @@ router.get("/mycrops/:userId", async (req, res) => {
   }
 });
 
+
 // FETCH SINGLE CROP
 
 router.get("/:id", async (req, res) => {
@@ -132,80 +124,70 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// REFRESH AI SNAPSHOT FOR A CROP
+
+// REFRESH AI SNAPSHOT
 
 router.get("/:id/ai-refresh", async (req, res) => {
+
   try {
+
     const crop = await Crop.findById(req.params.id);
 
     if (!crop) {
       return res.status(404).json({ message: "Crop not found" });
     }
 
-    // Python executable path (virtual env)
-    const pythonPath = path.join(
-      __dirname,
-      "..",
-      "ai",
-      "venv",
-      "Scripts",
-      "python.exe"
-    );
-
-    const pythonScriptPath = path.join(
-      __dirname,
-      "..",
-      "ai",
-      "ai_predict.py"
-    );
-
-    const daysAhead = 7;
-
-    const command = `"${pythonPath}" "${pythonScriptPath}" "${crop.cropType}" "${crop.state}" ${daysAhead} ${crop.expectedPricePerKg}`;
-
-    exec(command, async (error, stdout) => {
-      if (error) {
-        console.error("AI refresh execution failed:", error.message);
-        return res.status(500).json({ message: "AI refresh failed" });
-      }
-
-      try {
-        const aiResult = JSON.parse(stdout);
-
-        if (aiResult.success) {
-          crop.aiSnapshot = {
-            predictedMarketPrice: aiResult.predictedMarketPrice,
-            priceGapPercent: aiResult.priceGapPercent,
-            suggestion: aiResult.suggestion,
-            changePercent: aiResult.changePercent,
-          };
-
-          crop.aiLastUpdated = new Date();
-          await crop.save();
+    const aiRes = await axios.get(
+      "https://greenpath-1.onrender.com/predict",
+      {
+        params: {
+          cropType: crop.cropType,
+          state: crop.state,
+          expectedPricePerKg: crop.expectedPricePerKg
         }
-
-        res.json({
-          message: "AI refreshed successfully",
-          crop,
-        });
-
-      } catch (parseError) {
-        console.error("AI JSON parse error:", stdout);
-        res.status(500).json({ message: "Invalid AI response" });
       }
+    );
+
+    const aiResult = aiRes.data;
+
+    if (aiResult.success) {
+
+      crop.aiSnapshot = {
+        predictedMarketPrice: aiResult.predictedMarketPrice,
+        priceGapPercent: aiResult.priceGapPercent,
+        suggestion: aiResult.suggestion,
+        changePercent: aiResult.changePercent,
+      };
+
+      crop.aiLastUpdated = new Date();
+
+      await crop.save();
+    }
+
+    res.json({
+      message: "AI refreshed successfully",
+      crop
     });
 
   } catch (err) {
-    console.error("Server error refreshing AI:", err);
-    res.status(500).json({ message: "Server error refreshing AI" });
+
+    console.error("AI refresh failed:", err.message);
+
+    res.status(500).json({ message: "AI refresh failed" });
+
   }
+
 });
 
-// UPDATE CROP (Only Owner)
+
+// UPDATE CROP
 
 router.put("/:id", authMiddleware, upload.array("images"), async (req, res) => {
+
   try {
+
     const crop = await Crop.findById(req.params.id);
+
     if (!crop) return res.status(404).json({ message: "Crop not found" });
 
     if (crop.user.toString() !== req.user.id) {
@@ -232,18 +214,28 @@ router.put("/:id", authMiddleware, upload.array("images"), async (req, res) => {
     }
 
     const updatedCrop = await crop.save();
+
     res.json(updatedCrop);
+
   } catch (err) {
+
     console.error("Error updating crop:", err.message);
+
     res.status(500).json({ message: "Server error updating crop" });
+
   }
+
 });
 
-// DELETE CROP (Only Owner)
+
+// DELETE CROP
 
 router.delete("/:id", authMiddleware, async (req, res) => {
+
   try {
+
     const crop = await Crop.findById(req.params.id);
+
     if (!crop) return res.status(404).json({ message: "Crop not found" });
 
     if (crop.user.toString() !== req.user.id) {
@@ -251,11 +243,17 @@ router.delete("/:id", authMiddleware, async (req, res) => {
     }
 
     await crop.deleteOne();
+
     res.json({ message: "Crop deleted successfully" });
+
   } catch (err) {
+
     console.error(err);
+
     res.status(500).json({ message: "Server error deleting crop" });
+
   }
+
 });
 
 module.exports = router;
