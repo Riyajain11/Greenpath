@@ -1,0 +1,196 @@
+/* Container */
+.crop-form-container {
+  background-color: #fafafa;
+}
+
+/* Hero Section */
+.crop-form-hero {
+  background-size: cover;
+  background-position: center;
+  height: 175px;
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 50px;
+  
+  /* ✨ Fade animation for hero section */
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: fadeInHero 0.8s ease-out forwards;
+}
+
+.form-wrapper {
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Title Styling with Text Shadow */
+.crop-form-title {
+  color: #fff;
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-shadow:
+    1px 1px 2px rgba(0, 0, 0, 0.8),
+    2px 2px 4px rgba(0, 0, 0, 0.6),
+    3px 3px 8px rgba(255, 255, 255, 0.5);
+  text-align: left;
+
+  /* ✨ Slight delay for staggered effect */
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: fadeInHeroText 1s ease-out 0.3s forwards;
+}
+@keyframes fadeInHero {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInHeroText {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Form Section */
+.crop-form-card {
+  max-width: 1200px;
+  margin: 10px auto;
+  padding: 30px;
+  background-color: transparent;
+
+  /* ✨ Fade-Up Animation */
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+/* ✨ Animation Keyframe */
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Grid Layout */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-weight: 500;
+  font-size: 1.15rem;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+/* Input Styling with Smooth Transitions */
+.form-group input,
+.form-group textarea,
+.form-group button {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #16a34a;
+  box-shadow: 0 0 5px rgba(22, 163, 74, 0.4);
+}
+
+/* Submit Button */
+.form-group button {
+  background-color: #16a34a;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s, transform 0.2s;
+  width: 25%;
+}
+
+.form-group button:hover {
+  background-color: #15803d;
+  transform: translateY(-2px);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .crop-form-title {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  .crop-form-card {
+    padding: 20px;
+  }
+
+  .form-group button {
+    width: 100%; /* Full width on small screens */
+  }
+}
+.image-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.image-card {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease-in-out;
+}
+
+.image-card:hover {
+  transform: scale(1.05);
+}
+
+.image-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.delete-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(255, 255, 255, 0.9);
+  color: red;
+  border: none;
+  font-size: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background 0.2s;
+}
+
+.delete-btn:hover {
+  background: red;
+  color: white;
+}

@@ -1,0 +1,22 @@
+:root{
+    color: black;
+    background-color: white;
+} 
+
+.nav-container{
+    background-color: white !important;
+    border-radius: 20px !important; 
+} 
+.navbar {
+    background-color: #2d6a4f !important; /* Dark green */ 
+    border-radius: 20px !important; 
+    padding: 10px 20px !important; 
+    margin-top: 10px !important;
+    
+}  
+
+.button {
+    background-color: #2d6a4f !important; 
+    color: white !important;
+}
+
