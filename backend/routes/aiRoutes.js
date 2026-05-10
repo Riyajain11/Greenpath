@@ -15,16 +15,17 @@ router.get("/smart-price", async (req, res) => {
       });
     }
 
-    const response = await axios.get(
-      "https://greenpath-1.onrender.com/predict",
-      {
-        params: {
-          cropType,
-          state,
-          expectedPricePerKg: expectedPricePerKg || 0
-        }
-      }
-    );
+   const response = await axios.get(
+  "https://greenpath-1.onrender.com/predict",
+  {
+    timeout: 60000,
+    params: {
+      cropType,
+      state,
+      expectedPricePerKg: expectedPricePerKg || 0
+    }
+  }
+);
 
     res.json(response.data);
 
