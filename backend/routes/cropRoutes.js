@@ -18,7 +18,9 @@ router.post("/", upload.array("images"), async (req, res) => {
     }
 
     if (imageUrls.length === 0) {
-      return res.status(400).json({ message: "At least one image is required" });
+      return res
+        .status(400)
+        .json({ message: "At least one image is required" });
     }
 
     const crop = new Crop({
@@ -37,22 +39,17 @@ router.post("/", upload.array("images"), async (req, res) => {
 
     // 🌱 AI PRICE PREDICTION FROM ML SERVICE
     try {
-
-      const aiRes = await axios.get(
-        "https://greenpath-1.onrender.com/predict",
-        {
-          params: {
-            cropType: crop.cropType,
-            state: crop.state,
-            expectedPricePerKg: crop.expectedPricePerKg
-          }
-        }
-      );
+      const aiRes = await axios.get("https:///api/ai/smart-price/predict", {
+        params: {
+          cropType: crop.cropType,
+          state: crop.state,
+          expectedPricePerKg: crop.expectedPricePerKg,
+        },
+      });
 
       const aiResult = aiRes.data;
 
       if (aiResult.success) {
-
         crop.aiSnapshot = {
           predictedMarketPrice: aiResult.predictedMarketPrice,
           priceGapPercent: aiResult.priceGapPercent,
@@ -62,26 +59,19 @@ router.post("/", upload.array("images"), async (req, res) => {
 
         crop.aiLastUpdated = new Date();
       }
-
     } catch (aiError) {
-
       console.error("AI prediction failed:", aiError.message);
-
     }
 
     await crop.save();
 
     res.status(201).json(crop);
-
   } catch (err) {
-
     console.error("Error creating crop:", err);
 
     res.status(500).json({ message: "Server error creating crop" });
-
   }
 });
-
 
 // FETCH ALL CROPS
 
@@ -94,7 +84,6 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: "Server error fetching crops" });
   }
 });
-
 
 // FETCH CROPS BY USER ID
 
@@ -110,7 +99,6 @@ router.get("/mycrops/:userId", async (req, res) => {
   }
 });
 
-
 // FETCH SINGLE CROP
 
 router.get("/:id", async (req, res) => {
@@ -124,34 +112,28 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-
 // REFRESH AI SNAPSHOT
 
 router.get("/:id/ai-refresh", async (req, res) => {
-
   try {
-
     const crop = await Crop.findById(req.params.id);
 
     if (!crop) {
       return res.status(404).json({ message: "Crop not found" });
     }
 
-    const aiRes = await axios.get(
-      "https://greenpath-1.onrender.com/predict",
-      {
-        params: {
-          cropType: crop.cropType,
-          state: crop.state,
-          expectedPricePerKg: crop.expectedPricePerKg
-        }
-      }
-    );
+    const res = await axios.get("/api/ai/smart-price", {
+  timeout: 60000,
+  params: {
+    cropType: cropType.trim().toLowerCase(),
+    state: state.trim().toLowerCase(),
+    expectedPricePerKg,
+  },
+});
 
     const aiResult = aiRes.data;
 
     if (aiResult.success) {
-
       crop.aiSnapshot = {
         predictedMarketPrice: aiResult.predictedMarketPrice,
         priceGapPercent: aiResult.priceGapPercent,
@@ -166,26 +148,19 @@ router.get("/:id/ai-refresh", async (req, res) => {
 
     res.json({
       message: "AI refreshed successfully",
-      crop
+      crop,
     });
-
   } catch (err) {
-
     console.error("AI refresh failed:", err.message);
 
     res.status(500).json({ message: "AI refresh failed" });
-
   }
-
 });
-
 
 // UPDATE CROP
 
 router.put("/:id", authMiddleware, upload.array("images"), async (req, res) => {
-
   try {
-
     const crop = await Crop.findById(req.params.id);
 
     if (!crop) return res.status(404).json({ message: "Crop not found" });
@@ -216,24 +191,17 @@ router.put("/:id", authMiddleware, upload.array("images"), async (req, res) => {
     const updatedCrop = await crop.save();
 
     res.json(updatedCrop);
-
   } catch (err) {
-
     console.error("Error updating crop:", err.message);
 
     res.status(500).json({ message: "Server error updating crop" });
-
   }
-
 });
-
 
 // DELETE CROP
 
 router.delete("/:id", authMiddleware, async (req, res) => {
-
   try {
-
     const crop = await Crop.findById(req.params.id);
 
     if (!crop) return res.status(404).json({ message: "Crop not found" });
@@ -245,15 +213,11 @@ router.delete("/:id", authMiddleware, async (req, res) => {
     await crop.deleteOne();
 
     res.json({ message: "Crop deleted successfully" });
-
   } catch (err) {
-
     console.error(err);
 
     res.status(500).json({ message: "Server error deleting crop" });
-
   }
-
 });
 
 module.exports = router;
