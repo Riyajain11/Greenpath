@@ -16,30 +16,30 @@ const AIPriceCheck = () => {
   //    API CALL
 
   const handleCheck = async () => {
-    try {
-      setLoading(true);
-      setError("");
-      setResult(null);
+  try {
+    setLoading(true);
+    setError("");
+    setResult(null);
 
-      const res = await axios.get("/api/ai/smart-price", {
-        params: {
-          cropType: cropType.trim().toLowerCase(),
-          state: state.trim().toLowerCase(),
-          expectedPricePerKg,
-        },
-      });
+    const res = await axios.get("https://greenpath-1.onrender.com/predict", {
+      timeout: 60000,
+      params: {
+        cropType: cropType.trim().toLowerCase(),
+        state: state.trim().toLowerCase(),
+        expectedPricePerKg,
+      },
+    });
 
-      console.log("AI RESPONSE 👉", res.data);
+    console.log("AI RESPONSE 👉", res.data);
 
-      setResult(res.data);
-    } catch (err) {
-      console.error("AI ERROR 👉", err);
-      setError("AI prediction failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+    setResult(res.data);
+  } catch (err) {
+    console.error("AI ERROR 👉", err);
+    setError("AI prediction failed");
+  } finally {
+    setLoading(false);
+  }
+};
   // UI
   return (
     <div className="min-h-screen pt-28 px-3 sm:px-4 md:px-6 bg-green-50 overflow-x-hidden">
