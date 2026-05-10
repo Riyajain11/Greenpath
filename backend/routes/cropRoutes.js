@@ -6,7 +6,6 @@ const authMiddleware = require("../middleware/authMiddleware");
 const axios = require("axios");
 
 // CREATE A NEW CROP WITH IMAGES + AI SNAPSHOT
-
 router.post("/", upload.array("images"), async (req, res) => {
   try {
     let imageUrls = [];
@@ -37,15 +36,19 @@ router.post("/", upload.array("images"), async (req, res) => {
       images: imageUrls,
     });
 
-    // 🌱 AI PRICE PREDICTION FROM ML SERVICE
+    // AUTO AI SNAPSHOT
     try {
-      const aiRes = await axios.get("https:///api/ai/smart-price/predict", {
-        params: {
-          cropType: crop.cropType,
-          state: crop.state,
-          expectedPricePerKg: crop.expectedPricePerKg,
-        },
-      });
+      const aiRes = await axios.get(
+        "https://greenpath-1.onrender.com/predict",
+        {
+          timeout: 60000,
+          params: {
+            cropType: crop.cropType,
+            state: crop.state,
+            expectedPricePerKg: crop.expectedPricePerKg,
+          },
+        }
+      );
 
       const aiResult = aiRes.data;
 
@@ -68,13 +71,11 @@ router.post("/", upload.array("images"), async (req, res) => {
     res.status(201).json(crop);
   } catch (err) {
     console.error("Error creating crop:", err);
-
     res.status(500).json({ message: "Server error creating crop" });
   }
 });
 
 // FETCH ALL CROPS
-
 router.get("/", async (req, res) => {
   try {
     const crops = await Crop.find().sort({ createdAt: -1 });
@@ -85,13 +86,13 @@ router.get("/", async (req, res) => {
   }
 });
 
-// FETCH CROPS BY USER ID
-
+// FETCH USER CROPS
 router.get("/mycrops/:userId", async (req, res) => {
   try {
     const crops = await Crop.find({ user: req.params.userId }).sort({
       createdAt: -1,
     });
+
     res.json(crops);
   } catch (err) {
     console.error(err);
@@ -99,21 +100,7 @@ router.get("/mycrops/:userId", async (req, res) => {
   }
 });
 
-// FETCH SINGLE CROP
-
-router.get("/:id", async (req, res) => {
-  try {
-    const crop = await Crop.findById(req.params.id);
-    if (!crop) return res.status(404).json({ message: "Crop not found" });
-    res.json(crop);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error fetching crop" });
-  }
-});
-
-// REFRESH AI SNAPSHOT
-
+// AI REFRESH
 router.get("/:id/ai-refresh", async (req, res) => {
   try {
     const crop = await Crop.findById(req.params.id);
@@ -122,14 +109,17 @@ router.get("/:id/ai-refresh", async (req, res) => {
       return res.status(404).json({ message: "Crop not found" });
     }
 
-    const res = await axios.get("/api/ai/smart-price", {
-  timeout: 60000,
-  params: {
-    cropType: cropType.trim().toLowerCase(),
-    state: state.trim().toLowerCase(),
-    expectedPricePerKg,
-  },
-});
+    const aiRes = await axios.get(
+      "https://greenpath-1.onrender.com/predict",
+      {
+        timeout: 60000,
+        params: {
+          cropType: crop.cropType,
+          state: crop.state,
+          expectedPricePerKg: crop.expectedPricePerKg,
+        },
+      }
+    );
 
     const aiResult = aiRes.data;
 
@@ -157,13 +147,30 @@ router.get("/:id/ai-refresh", async (req, res) => {
   }
 });
 
-// UPDATE CROP
+// FETCH SINGLE CROP
+router.get("/:id", async (req, res) => {
+  try {
+    const crop = await Crop.findById(req.params.id);
 
+    if (!crop) {
+      return res.status(404).json({ message: "Crop not found" });
+    }
+
+    res.json(crop);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error fetching crop" });
+  }
+});
+
+// UPDATE CROP
 router.put("/:id", authMiddleware, upload.array("images"), async (req, res) => {
   try {
     const crop = await Crop.findById(req.params.id);
 
-    if (!crop) return res.status(404).json({ message: "Crop not found" });
+    if (!crop) {
+      return res.status(404).json({ message: "Crop not found" });
+    }
 
     if (crop.user.toString() !== req.user.id) {
       return res.status(403).json({ message: "Not authorized" });
@@ -193,18 +200,18 @@ router.put("/:id", authMiddleware, upload.array("images"), async (req, res) => {
     res.json(updatedCrop);
   } catch (err) {
     console.error("Error updating crop:", err.message);
-
     res.status(500).json({ message: "Server error updating crop" });
   }
 });
 
 // DELETE CROP
-
 router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const crop = await Crop.findById(req.params.id);
 
-    if (!crop) return res.status(404).json({ message: "Crop not found" });
+    if (!crop) {
+      return res.status(404).json({ message: "Crop not found" });
+    }
 
     if (crop.user.toString() !== req.user.id) {
       return res.status(403).json({ message: "Not authorized" });
@@ -215,7 +222,6 @@ router.delete("/:id", authMiddleware, async (req, res) => {
     res.json({ message: "Crop deleted successfully" });
   } catch (err) {
     console.error(err);
-
     res.status(500).json({ message: "Server error deleting crop" });
   }
 });
